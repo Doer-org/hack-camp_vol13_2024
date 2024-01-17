@@ -28,7 +28,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     volumes:
-      - .:/app
+      - ./server:/app
     ports:
       - "3000:3000"
     restart: always
