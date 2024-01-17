@@ -9,9 +9,9 @@ RUN apt-get update && apt-get install -y \
     texlive-latex-extra \
     imagemagick=8:6.9.11.60*
 
-WORKDIR /src
-COPY ../../src /src
-RUN mkdir -p /src/tmp
+WORKDIR /tex_to_img
+COPY ../../tex_to_img /tex_to_img
+RUN mkdir -p /tex_to_img/tmp
 
 RUN pip3 install -r requirements.txt
 RUN sed -i '/<policy domain="coder" rights="none" pattern="PDF" \/>/d' /etc/ImageMagick-6/policy.xml
