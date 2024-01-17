@@ -11,30 +11,30 @@ services:
     volumes:
       - ../src:/root/src
 
-#   db:
-#     image: postgres
-#     environment:
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: password
-#     volumes:
-#       - postgres_volume:/var/lib/postgresql/data
-#     restart: always
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    restart: always
 
-#   server:
-#     build:
-#       dockerfile: ./docker/server/Dockerfile
-#     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
-#     environment:
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: password
-#     volumes:
-#       - .:/app
-#     ports:
-#       - "3000:3000"
-#     restart: always
-#     tty: true
-#     stdin_open: true
-#     depends_on:
-#       - db
-# volumes:
-#   postgres_volume:
+  server:
+    build:
+      dockerfile: ./docker/server/Dockerfile
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    restart: always
+    tty: true
+    stdin_open: true
+    depends_on:
+      - db
+volumes:
+  postgres_volume:
