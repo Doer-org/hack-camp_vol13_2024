@@ -21,6 +21,8 @@ class FormulaController < ApplicationController
   
     # PATCH/PUT /projects/:project_id/formulars/:id
     def update
+      # レンダリングして画像を追加する必要あり
+      
       if @formular.update(formular_params)
         render json: @formular
       else
