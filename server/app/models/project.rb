@@ -1,4 +1,4 @@
 class Project < ApplicationRecord
   belongs_to :user
-  has_many :formulars
+  has_many :formulas
 end
