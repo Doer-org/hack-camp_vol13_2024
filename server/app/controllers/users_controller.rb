@@ -19,6 +19,7 @@ class UsersController < ApplicationController
         render json: @user
       rescue ActiveRecord::RecordNotFound => e
         render json: { error: e.class.to_s, message: e.message }, status: :not_found
+      end
     end
   
     private
