@@ -1,3 +1,6 @@
+require 'tempfile'
+require 'httparty'
+
 class FormulasController < ApplicationController
     before_action :set_project
     before_action :set_formula, only: [:update, :destroy]
@@ -11,7 +14,6 @@ class FormulasController < ApplicationController
     # POST projects/:project_id/formulas
     def create
       @formula = @project.formulas.new(formula_params)
-  
       if @formula.save
         render json: @formula, status: :created, location: project_formula_url(@project, @formula)
       else
@@ -19,12 +21,15 @@ class FormulasController < ApplicationController
       end
     end
   
-    # PATCH/PUT /projects/:project_id/formulas/:id
+    # PATCH /projects/:project_id/formulas/:id
     def update
-      # レンダリングして画像を追加する必要あり
-      
+      tmp_img = get_img
+      if tmp_img
+        @formula.image.attach(io: tmp_img, filename: 'image.png', content_type: 'image/png')
+      end
       if @formula.update(formula_params)
-        render json: @formula
+        image_url = rails_blob_url(@formula.image) if @formula.image.attached?
+        render json: { formula: @formula, image_url: image_url }
       else
         render json: @formula.errors, status: :unprocessable_entity
       end
@@ -46,6 +51,27 @@ class FormulasController < ApplicationController
   
       def formula_params
         params.require(:formula).permit(:file_name, :content)
+      end
+
+      def get_img
+        url = Rails.application.credentials.tex_to_img[:url] + '/latex_to_image'
+        body = {
+          "formula": @formula.content.gsub('\\', '\\\\')
+        }
+        response = HTTParty.post(url, 
+          body: body.to_json,
+          headers: { 'Content-Type' => 'application/json' }
+        )
+        if response.success?
+          temp_img = Tempfile.new(['image', '.png'])
+          temp_img.binmode
+          temp_img.write(response.body)
+          temp_img.rewind
+          temp_img
+        else
+          puts 'Failed to get image from API'
+          nil
+        end
       end
   end
   
