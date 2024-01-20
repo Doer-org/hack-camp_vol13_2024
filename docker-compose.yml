@@ -10,6 +10,18 @@ services:
     tty: true
     volumes:
       - ../src:/root/src
+  
+  Front:
+    build:
+      dockerfile: ./docker/Front/Dockerfile
+    command: pnpm run dev
+    volumes:
+      - ./Front:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - server
+    restart: always
 
   db:
     image: postgres
