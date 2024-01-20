@@ -4,7 +4,7 @@ RUN mkdir /app
 WORKDIR /app
 ADD ../../server/Gemfile /app/Gemfile
 ADD ../../server/Gemfile.lock /app/Gemfile.lock
-RUN bundle install
+# RUN bundle install
 ADD ./server /app
 
 COPY ./server/entrypoint.sh /usr/bin/
