@@ -12,13 +12,16 @@ class UsersController < ApplicationController
   
     # GET /users/:id
     def show
-      # @user = User.find(params[:id])
-      # render json: @user
       begin
         @user = User.find(params[:id])
         render json: @user
       rescue ActiveRecord::RecordNotFound => e
         render json: { error: e.class.to_s, message: e.message }, status: :not_found
+      rescue => e
+        # 予期しないエラーの場合の処理
+        logger.error "Internal Server Error: #{e.class} - #{e.message}"
+        e.backtrace.each { |line| logger.error line }
+        render json: { error: 'Internal Server Error', message: 'An unexpected error has occurred.' }, status: :internal_server_error
       end
     end
   
