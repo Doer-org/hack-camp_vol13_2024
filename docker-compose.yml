@@ -16,7 +16,7 @@ services:
       dockerfile: ./docker/front/Dockerfile
     command: pnpm run dev
     volumes:
-      - ./front:/app
+      - ./front/app:/app
     ports:
       - "8000:8000"
     depends_on:
