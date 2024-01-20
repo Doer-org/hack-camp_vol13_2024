@@ -86,7 +86,7 @@ production:
   <<: *default
   database: app_production
   url: <%= Rails.application.credentials.dig(:supabase_db, :url) %>
+  prepared_statements: false
   # reconnect: true
-  prepared_statements: true
   # username: app
   # password: <%= ENV["APP_DATABASE_PASSWORD"] %>
