@@ -4,5 +4,12 @@ RUN mkdir /app
 WORKDIR /app
 ADD ../../server/Gemfile /app/Gemfile
 ADD ../../server/Gemfile.lock /app/Gemfile.lock
-RUN bundle install
+# RUN bundle install
 ADD ./server /app
+
+COPY ./server/entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
+EXPOSE 3000
+
+CMD [ "rails","server","-b","0.0.0.0" ]
