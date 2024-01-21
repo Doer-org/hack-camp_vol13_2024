@@ -48,10 +48,15 @@ function TextBoxComponent() {
         type="text"
         value={textBoxValue}
         onChange={handleTextBoxChange}
+        style={{ fontSize: '30px', width: '500px', padding: '10px' }} // テキストボックスのスタイル調整
       />
       {apiResponse && apiResponse.image_url && (
         <div>
-          <img src={apiResponse.image_url} alt="Response Image" />
+          <img
+            src={apiResponse.image_url}
+            alt="Response Image"
+            style={{ width: '100%', maxWidth: '600px' }} // 画像のスタイル調整
+          />
         </div>
       )}
     </div>
