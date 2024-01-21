@@ -1,5 +1,4 @@
-'use client'
-
+'use client';
 import React, { useState, useEffect, ChangeEvent } from 'react';
 
 function TextBoxComponent() {
@@ -24,8 +23,6 @@ function TextBoxComponent() {
             }
           })
         });
-
-        console.log(response);
 
         if (!response.ok) {
           throw new Error('Api call failed: ' + response.statusText);
@@ -52,8 +49,11 @@ function TextBoxComponent() {
         value={textBoxValue}
         onChange={handleTextBoxChange}
       />
-      <p>入力された値: {textBoxValue}</p>
-      {apiResponse && <p>API Response: {JSON.stringify(apiResponse)}</p>}
+      {apiResponse && apiResponse.image_url && (
+        <div>
+          <img src={apiResponse.image_url} alt="Response Image" />
+        </div>
+      )}
     </div>
   );
 }
