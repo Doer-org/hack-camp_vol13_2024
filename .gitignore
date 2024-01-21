@@ -2,3 +2,4 @@
 __pycache__/
 .env
 tex_to_img/tmp/
+node_modules/
