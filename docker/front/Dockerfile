@@ -1,6 +1,6 @@
 FROM node:18-alpine
 WORKDIR /app
-COPY /front/app/package.json .
+COPY /front/package.json .
 RUN npm install -g pnpm
 RUN pnpm install
 COPY ./front .
