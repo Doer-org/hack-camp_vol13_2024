@@ -11,12 +11,12 @@ services:
     volumes:
       - ../src:/root/src
   
-  Front:
+  front:
     build:
-      dockerfile: ./docker/Front/Dockerfile
+      dockerfile: ./docker/front/Dockerfile
     command: pnpm run dev
     volumes:
-      - ./Front:/app
+      - ./front/app:/app
     ports:
       - "8000:8000"
     depends_on:
