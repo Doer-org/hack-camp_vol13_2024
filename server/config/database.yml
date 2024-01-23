@@ -85,7 +85,7 @@ test:
 production:
   <<: *default
   database: app_production
-  url: <%= Rails.application.credentials.dig(:supabase_db, :url) %>
+  url: <%= Rails.application.credentials.supabase_db[:url] %>
   prepared_statements: false
   # reconnect: true
   # username: app
