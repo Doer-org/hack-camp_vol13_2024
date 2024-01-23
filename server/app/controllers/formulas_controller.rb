@@ -54,7 +54,11 @@ class FormulasController < ApplicationController
       end
 
       def get_img
-        url = Rails.application.credentials.tex_to_img[:url] + '/latex_to_image'
+        if ENV['RAILS_ENV'] == 'development'
+          url = Rails.application.credentials.tex_compile[:dev_url] + '/latex_to_image'
+        else
+          url = Rails.application.credentials.tex_compile[:prod_url] + '/latex_to_image'
+        end
         body = {
           "formula": @formula.content.gsub('\\', '\\\\')
         }
