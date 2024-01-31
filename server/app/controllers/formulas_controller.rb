@@ -3,7 +3,7 @@ require 'httparty'
 
 class FormulasController < ApplicationController
     before_action :set_project
-    before_action :set_formula, only: [:update, :destroy, :get_img]
+    before_action :set_formula, only: [:update, :destroy]
 
     # GET projects/:project_id/formulas
     def index
