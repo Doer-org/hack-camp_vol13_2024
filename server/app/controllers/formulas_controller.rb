@@ -1,4 +1,3 @@
-require 'tempfile'
 require 'httparty'
 
 class FormulasController < ApplicationController
@@ -24,10 +23,10 @@ class FormulasController < ApplicationController
     # PATCH /projects/:project_id/formulas/:id
     def update
       @formula.update(formula_params)
-      @formula.save
       get_img
       image_url = rails_blob_url(@formula.image)
-      render json: { formula: @formula, image_url: image_url }
+      @formula.update(image_url: image_url)
+      render json: { formula: @formula}
     end
   
     # DELETE /projects/:project_id/formulas/:id
@@ -62,14 +61,12 @@ class FormulasController < ApplicationController
           headers: { 'Content-Type' => 'application/json' }
         )
         if response.success?
-          tmp_img = Tempfile.new(['image', '.png'])
-          tmp_img.binmode
-          tmp_img.write(response.body)
-          tmp_img.rewind
-          @formula.image.attach(io: tmp_img, filename: 'image.png', content_type: 'image/png')
+          image_data = StringIO.new(response.body)
+          @formula.image.attach(io: image_data, filename: 'image.png', content_type: 'image/png')
           @formula.save
         else
           puts 'Failed to get image from API'
+          # ここでエラーロギングを改善することを検討してください
         end
       end
   end
