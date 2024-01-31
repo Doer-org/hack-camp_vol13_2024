@@ -1,4 +1,3 @@
-require 'tempfile'
 require 'httparty'
 
 class FormulasController < ApplicationController
@@ -23,13 +22,11 @@ class FormulasController < ApplicationController
   
     # PATCH /projects/:project_id/formulas/:id
     def update
-      tmp_img = get_img
-      if tmp_img
-        @formula.image.attach(io: tmp_img, filename: 'image.png', content_type: 'image/png')
-      end
-      if @formula.update(formula_params)
-        image_url = rails_blob_url(@formula.image) if @formula.image.attached?
-        render json: { formula: @formula, image_url: image_url }
+      get_img
+      image_url = rails_blob_url(@formula.image)
+      updated_params = formula_params.merge(image_url: image_url)
+      if @formula.update(updated_params)
+        render json: { formula: @formula }
       else
         render json: @formula.errors, status: :unprocessable_entity
       end
@@ -60,21 +57,19 @@ class FormulasController < ApplicationController
           url = Rails.application.credentials.tex_compile[:prod_url] + '/latex_to_image'
         end
         body = {
-          "formula": @formula.content.gsub('\\', '\\\\')
+          "formula": formula_params[:content].gsub('\\', '\\\\')
         }
         response = HTTParty.post(url, 
           body: body.to_json,
           headers: { 'Content-Type' => 'application/json' }
         )
         if response.success?
-          temp_img = Tempfile.new(['image', '.png'])
-          temp_img.binmode
-          temp_img.write(response.body)
-          temp_img.rewind
-          temp_img
+          image_data = StringIO.new(response.body)
+          @formula.image.attach(io: image_data, filename: 'image.png', content_type: 'image/png')
+          @formula.save
         else
           puts 'Failed to get image from API'
-          nil
+          # ここでエラーロギングを改善することを検討してください
         end
       end
   end
