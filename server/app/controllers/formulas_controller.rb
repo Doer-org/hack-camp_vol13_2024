@@ -3,7 +3,7 @@ require 'httparty'
 
 class FormulasController < ApplicationController
     before_action :set_project
-    before_action :set_formula, only: [:update, :destroy]
+    before_action :set_formula, only: [:update, :destroy, :get_img]
 
     # GET projects/:project_id/formulas
     def index
@@ -23,16 +23,11 @@ class FormulasController < ApplicationController
   
     # PATCH /projects/:project_id/formulas/:id
     def update
-      tmp_img = get_img
-      if tmp_img
-        @formula.image.attach(io: tmp_img, filename: 'image.png', content_type: 'image/png')
-      end
-      if @formula.update(formula_params)
-        image_url = rails_blob_url(@formula.image) if @formula.image.attached?
-        render json: { formula: @formula, image_url: image_url }
-      else
-        render json: @formula.errors, status: :unprocessable_entity
-      end
+      @formula.update(formula_params)
+      @formula.save
+      get_img
+      image_url = rails_blob_url(@formula.image)
+      render json: { formula: @formula, image_url: image_url }
     end
   
     # DELETE /projects/:project_id/formulas/:id
@@ -67,14 +62,14 @@ class FormulasController < ApplicationController
           headers: { 'Content-Type' => 'application/json' }
         )
         if response.success?
-          temp_img = Tempfile.new(['image', '.png'])
-          temp_img.binmode
-          temp_img.write(response.body)
-          temp_img.rewind
-          temp_img
+          tmp_img = Tempfile.new(['image', '.png'])
+          tmp_img.binmode
+          tmp_img.write(response.body)
+          tmp_img.rewind
+          @formula.image.attach(io: tmp_img, filename: 'image.png', content_type: 'image/png')
+          @formula.save
         else
           puts 'Failed to get image from API'
-          nil
         end
       end
   end
