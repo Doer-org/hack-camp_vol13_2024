@@ -22,11 +22,14 @@ class FormulasController < ApplicationController
   
     # PATCH /projects/:project_id/formulas/:id
     def update
-      @formula.update(formula_params)
       get_img
       image_url = rails_blob_url(@formula.image)
-      @formula.update(image_url: image_url)
-      render json: { formula: @formula}
+      updated_params = formula_params.merge(image_url: image_url)
+      if @formula.update(updated_params)
+        render json: { formula: @formula }
+      else
+        render json: @formula.errors, status: :unprocessable_entity
+      end
     end
   
     # DELETE /projects/:project_id/formulas/:id
@@ -54,7 +57,7 @@ class FormulasController < ApplicationController
           url = Rails.application.credentials.tex_compile[:prod_url] + '/latex_to_image'
         end
         body = {
-          "formula": @formula.content.gsub('\\', '\\\\')
+          "formula": formula_params[:content].gsub('\\', '\\\\')
         }
         response = HTTParty.post(url, 
           body: body.to_json,
