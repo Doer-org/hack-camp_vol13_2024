@@ -11,17 +11,16 @@ services:
     volumes:
       - ../src:/root/src
   
-  # front:
-  #   build:
-  #     dockerfile: ./docker/front/Dockerfile
-  #   command: pnpm run dev
-  #   volumes:
-  #     - ./front:/app
-  #   ports:
-  #     - "8000:8000"
-  #   depends_on:
-  #     - server
-  #   restart: always
+  client:
+    build:
+      context: .
+      dockerfile: ./client/Dockerfile
+    volumes:
+      - ./client:/usr/src
+    ports:
+      - 3020:3000
+    container_name: client
+    tty: true
 
   db:
     image: postgres
