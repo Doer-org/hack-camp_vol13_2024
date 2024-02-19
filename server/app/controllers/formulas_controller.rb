@@ -1,5 +1,3 @@
-require 'httparty'
-
 class FormulasController < ApplicationController
     before_action :set_project
     before_action :set_formula, only: [:update, :destroy]
@@ -51,26 +49,33 @@ class FormulasController < ApplicationController
       end
 
       def get_img
-        if ENV['RAILS_ENV'] == 'development'
-          url = Rails.application.credentials.tex_compile[:dev_url] + '/latex_to_image'
-        else
-          url = Rails.application.credentials.tex_compile[:prod_url] + '/latex_to_image'
+        latex_source = <<~LATEX
+          \\documentclass[12pt]{article}
+          \\usepackage{bm}
+          \\usepackage{amsmath}
+          \\pagestyle{empty}
+          \\begin{document}
+          \\[ #{formula_params[:content]} \\]
+          \\end{document}
+        LATEX
+      
+        File.open("tmp/formula.tex", "w") { |file| file.write(latex_source) }
+      
+        # Convert LaTeX file to PDF
+        system("pdflatex", "-output-directory=tmp", "./tmp/formula.tex")
+      
+        # Convert PDF to PNG image
+        system("convert", "-density", "300", "./tmp/formula.pdf", "-trim", "+repage", "-background", "transparent", "./tmp/formula.png")
+
+        # Add metadata to the image
+        image = MiniMagick::Image.open("./tmp/formula.png")
+        image.combine_options do |c|
+          c.set "Formula", formula_params[:content]
         end
-        body = {
-          "formula": formula_params[:content].gsub('\\', '\\\\')
-        }
-        response = HTTParty.post(url, 
-          body: body.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
-        if response.success?
-          image_data = StringIO.new(response.body)
-          @formula.image.attach(io: image_data, filename: 'image.png', content_type: 'image/png')
-          @formula.save
-        else
-          puts 'Failed to get image from API'
-          # ここでエラーロギングを改善することを検討してください
-        end
+        image.write("./tmp/formula.png")
+
+        @formula.image.attach(io: File.open("./tmp/formula.png"), filename: "formula.png", content_type: "image/png")
+        @formula.save
       end
   end
   
