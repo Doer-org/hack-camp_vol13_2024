@@ -66,6 +66,14 @@ class FormulasController < ApplicationController
       
         # Convert PDF to PNG image
         system("convert", "-density", "300", "./tmp/formula.pdf", "-trim", "+repage", "-background", "transparent", "./tmp/formula.png")
+
+        # Add metadata to the image
+        image = MiniMagick::Image.open("./tmp/formula.png")
+        image.combine_options do |c|
+          c.set "Formula", formula_params[:content]
+        end
+        image.write("./tmp/formula.png")
+
         @formula.image.attach(io: File.open("./tmp/formula.png"), filename: "formula.png", content_type: "image/png")
         @formula.save
       end
