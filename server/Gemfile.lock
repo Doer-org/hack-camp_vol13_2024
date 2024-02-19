@@ -147,6 +147,7 @@ GEM
       net-smtp
     marcel (1.0.2)
     method_source (1.0.0)
+    mini_magick (4.12.0)
     mini_mime (1.1.5)
     minitest (5.21.1)
     msgpack (1.7.2)
@@ -262,6 +263,7 @@ DEPENDENCIES
   debug
   google-cloud-storage
   httparty
+  mini_magick
   pg (~> 1.1)
   prettier_print
   puma (~> 5.0)
