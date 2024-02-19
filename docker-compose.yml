@@ -3,8 +3,8 @@ version: '3'
 services:
   client:
     build:
-      context: .
-      dockerfile: ./client/Dockerfile
+      context: ./client
+      dockerfile: ./Dockerfile
     volumes:
       - ./client:/usr/src
     ports:
@@ -19,13 +19,13 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - postgres_volume:/var/lib/postgresql/data
-    # restart: always
     ports:
       - "5432:5432"
 
   server:
     build:
-      dockerfile: ./docker/server/Dockerfile
+      context: ./server
+      dockerfile: ./Dockerfile
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -33,7 +33,6 @@ services:
       - ./server:/app
     ports:
       - "3010:3000"
-    # restart: always
     tty: true
     stdin_open: true
     depends_on:

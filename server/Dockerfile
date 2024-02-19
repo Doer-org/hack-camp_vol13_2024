@@ -12,11 +12,11 @@ RUN apt-get update -qq && apt-get install -y \
 
 RUN mkdir /app
 WORKDIR /app
-ADD ../../server/Gemfile /app/Gemfile
-ADD ../../server/Gemfile.lock /app/Gemfile.lock
-ADD ./server /app
+ADD ./Gemfile /app/Gemfile
+ADD ./Gemfile.lock /app/Gemfile.lock
+ADD . /app
 
-COPY ./server/entrypoint.sh /usr/bin/
+COPY ./entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
 # ImageMagickでPDFを扱うための設定
 RUN sed -i '/<policy domain="coder" rights="none" pattern="PDF" \/>/d' /etc/ImageMagick-6/policy.xml
